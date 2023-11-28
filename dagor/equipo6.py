@@ -1,7 +1,7 @@
 # from dagor import JuegoCaballosBailadores, \
 # JugadorCaballosBailadoresAleatorio, JugadorCaballosBailadoresInteractivo, JugadorCaballosBailadores
 
-from dagor import JugadorCaballosBailarines
+from dagor import JugadorCaballosBailadores
 
 #Definimos una nueva clase para nuestro jugador (se hereda de la clase JugadorCaballosBailadores)
 class JugadorCaballosBailadoresEquipo6(JugadorCaballosBailadores):
