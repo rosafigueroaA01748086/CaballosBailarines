@@ -7,6 +7,6 @@ from equipo6 import JugadorCaballosBailadoresEquipo6
 if __name__ == '__main__':
     juego = JuegoCaballosBailadores(
         JugadorCaballosBailadoresEquipo6('Equipo 6'),
-        JugadorCaballosBailadoresAleatorio('Bichite'),
-        5, 8)
+        JugadorCaballosBailadoresAleatorio('Malos'),
+        7, 9)
     juego.inicia(veces=100, delta_max=2)

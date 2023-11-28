@@ -1,10 +1,15 @@
 # from dagor import JuegoCaballosBailadores, \
 # JugadorCaballosBailadoresAleatorio, JugadorCaballosBailadoresInteractivo, JugadorCaballosBailadores
 
-from dagor import JugadorCaballosBailarines
+from dagor import JugadorCaballosBailadores
 
 #Definimos una nueva clase para nuestro jugador (se hereda de la clase JugadorCaballosBailadores)
 class JugadorCaballosBailadoresEquipo6(JugadorCaballosBailadores):
+    def eu(self, posicion):
+        if self.triunfo(posicion) == self.simbolo:
+            return 3
+        return self.triunfo(posicion) == self.simbolo
+
     def heuristica(self, posicion):
         
         #Definir heuristica/implementacion alternativa basada en triunfo
@@ -23,7 +28,7 @@ class JugadorCaballosBailadoresEquipo6(JugadorCaballosBailadores):
         """Si la profundidad especificada se alcanza o se encuentra una posicion ganadora
         #Se devuelve el resultado de la evaluacion heuristica para la posicion actual"""
         if profundidad == 0 or self.triunfo(posicion):
-            return self.heuristica(posicion)
+            return self.eu(posicion)
         
         #Se obtienen todas las posibles posiciones siguientes a partir de la posicion actual
         posiblesMovs = self.posiciones_siguientes(posicion)
@@ -81,7 +86,7 @@ class JugadorCaballosBailadoresEquipo6(JugadorCaballosBailadores):
         for p in posibles:
             #Se calcula la evaluacion de la posicion p utilizando un minimax con profundidad maxima de 3
             #Indica que es turno del minimizing player
-            eval = self.minimax(p, profundidad=3, jugador_max=False, alpha=float('-inf'), beta=float('inf'))
+            eval = self.minimax(p, profundidad=6, jugador_max=False, alpha=float('-inf'), beta=float('inf'))
             if eval > maxEval:
                 maxEval = eval
                 #Se actualiza el mejor movimiento con la posicion actual
