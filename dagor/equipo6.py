@@ -1,24 +1,50 @@
-# from dagor import JuegoCaballosBailadores, \
-# JugadorCaballosBailadoresAleatorio, JugadorCaballosBailadoresInteractivo, JugadorCaballosBailadores
+#-----------------------------------------------------
+#Project: Knight’s Dance
+#
+#Date: 29-Aug-2023
+#Authors:
+#           A01798012 Arturo Montes Gonzalez
+#           A01747848 Ares Ortiz Botello
+#           A01748086 Rosa Itzel Figueroa Rosas
+#-----------------------------------------------------
 
 from dagor import JugadorCaballosBailadores
 
 #Definimos una nueva clase para nuestro jugador (se hereda de la clase JugadorCaballosBailadores)
 class JugadorCaballosBailadoresEquipo6(JugadorCaballosBailadores):
+    
+    def comerOponente(self, posicion, jugador_max):
+        #Si una posicion lleva al gane, se regresa true si el jugador actual es el maximizing player
+        #De lo contrario, regresa False
+        if self.triunfo(posicion):
+            return True if self.jugador_max != jugador_max else False
+        return False
+    
+    #Funcion que obtiene todas las posiciones siguientes posibles a partir de la posicion dada
+    def evitarPerder(self, posicion, jugador_max):
+        #Se iteran sobre las posiciones
+        for p in self.posiciones_siguientes(posicion):
+            #Se verifica si mover alguna de estas posiciones, el oponente podria comer al jugador actual
+            if self.comerOponente(p, not jugador_max):
+                #Si se encuentra al menos una posicion en la que el oponente pueda comer al jugador actual, se regresa True
+                #Esto indica que el jugador actual debe evitar esa posicion para no perder
+                return True
+        #Si ninguna de las posiciones siguientes lleva a que el oponente coma al jugador actual, se regresa False
+        #Indicando que no es necesario evitar perder en la posicion actual    
+        return False
+    
     def heuristica(self, posicion):
         
-        #Definir heuristica/implementacion alternativa basada en triunfo
-        # if self.triunfo(posicion):
-        #     return 1 if self.simbolo == 'B' else -1
-        # else:
-        #     return 0
+        #me parece que esta heuristica todavia se puede mejorar aun mas
+        #porque haorita nomas verifica si 
         
         return self.triunfo(posicion) == self.simbolo
     
     """Implementacion de minimax profundidad: 
-    profundidad maxima a la que se ecplorara el arbol de busqueda
+    profundidad maxima a la que se explorara el arbol de busqueda
     jugador_max: bool que indica si es el turno del maximizing player
     alpha y beta: condiciones base para el algoritmo alpha-beta pruning"""
+    
     def minimax(self, posicion, profundidad, jugador_max, alpha, beta):
         """Si la profundidad especificada se alcanza o se encuentra una posicion ganadora
         #Se devuelve el resultado de la evaluacion heuristica para la posicion actual"""
@@ -57,19 +83,24 @@ class JugadorCaballosBailadoresEquipo6(JugadorCaballosBailadores):
             return minEval
     
     
-    # '''Función que iba a utilizar para predecir la posición del jugador contrario
-    # pero no la acabe, una disculpa'''
-    # def amenaza(self, posicion):
-    #     posibles = self.posiciones_siguientes(posicion)
-    #     if self.simbolo == 'B':
-    #         p
-
-    #     for p in posibles:
-    #         for c in posibles_contrario:
-    #             if p == c:
-    #                 return True
-    #             else:
-    #                 return False
+    def amenaza(self, posicion):
+        #Se calculan las posiciones del jugador contrario
+        posiciones_contrario = self.posiciones_contrario(posicion)
+        
+        #Se itera sobre cada posicion del jugador contrario
+        for p in posiciones_contrario:
+            #Se itera sobre cada posicion siguiente a la posicion actual
+            for c in self.posiciones_siguientes(posicion):
+                #Cuando el jugador contrario se esta moviendo hacia adelante en terminos de coordenadas,
+                #entre menores sean nuestras coordenadas (menos espacio para movernos) estamos en mayor riesgo
+                if self.simbolo == 'B' and p[0] > c[0] and p[1] > c[1]:
+                    return True
+                
+                #Cuando nos estamos moviendo hacia adelante en terminos de coordenadas, entre menores sean
+                #las coordenadas del jugador contrario, nuestro jugador representara una mayor amenaza 
+                elif self.simbolo != 'B' and p[0] < c[0] and p[1] < c[1]:
+                    return True
+        return False
 
     #Funcion que toma una posicion como argumento y utiliza minimax para tomar una decision sobre el mejor movimiento
     def tira(self, posicion):
@@ -81,30 +112,9 @@ class JugadorCaballosBailadoresEquipo6(JugadorCaballosBailadores):
         for p in posibles:
             #Se calcula la evaluacion de la posicion p utilizando un minimax con profundidad maxima de 3
             #Indica que es turno del minimizing player
-            eval = self.minimax(p, profundidad=3, jugador_max=False, alpha=float('-inf'), beta=float('inf'))
+            eval = self.minimax(p, profundidad=4, jugador_max=False, alpha=float('-inf'), beta=float('inf'))
             if eval > maxEval:
                 maxEval = eval
                 #Se actualiza el mejor movimiento con la posicion actual
                 mejorMov = p
         return mejorMov
-    
-        # for p in posibles:
-        #     if self.heuristica(p):
-        #         return p
-        
-        # for p in posibles:
-        #     futuro = self.posiciones_siguientes(p)
-        #     for pp in futuro:
-        #         if self.heuristica(pp):
-        #             return p
-        
-        # for p in posibles:
-        #     for c in posibles:
-        #         if self.amenaza(c, self._contrario):
-        #             return p
-        
-        # return posibles[0]
-
-# heuristica(self, posicion): Función heurística que puede utilizar un jugador para ranquear la posición enviada como argumento.
-# tira(self, posicion): Invocada automáticamente por el objeto controlador del juego para determinar el tiro de este jugador. 
-# Debe devolver un tiro válido a partir de la posición enviada como argumento.
