@@ -13,12 +13,6 @@ from dagor import JugadorCaballosBailadores
 #Definimos una nueva clase para nuestro jugador (se hereda de la clase JugadorCaballosBailadores)
 class JugadorCaballosBailadoresEquipo6(JugadorCaballosBailadores):
     
-    def comerOponente(self, posicion, jugador_max) -> bool:
-        #Si una posicion lleva al gane, se regresa true si el jugador actual es el maximizing player
-        #De lo contrario, regresa False
-        if self.triunfo(posicion):
-            return jugador_max 
-        return False
     
     #Funcion que obtiene todas las posiciones siguientes posibles a partir de la posicion dada
     def evitarPerder(self, posicion) -> int:
@@ -29,30 +23,12 @@ class JugadorCaballosBailadoresEquipo6(JugadorCaballosBailadores):
             triunfo = self.triunfo(p)
             if triunfo:
                 if triunfo != self.simbolo:
-                    malas_posiciones += 1
-                    return 11 
+                    malas_posiciones -= 10
+                    #return 11 
         #Si ninguna de las posiciones siguientes lleva a que el oponente coma al jugador actual, se regresa False
         #Indicando que no es necesario evitar perder en la posicion actual    
-        return 0 
+        return malas_posiciones 
 
-    def amenaza(self, posicion) -> int:
-        #Se calculan las posiciones del jugador contrario
-        posiciones_contrario = self.posiciones_contrario(posicion)
-        posiciones_amenazadas = 0 
-        #Se itera sobre cada posicion del jugador contrario
-        for p in posiciones_contrario:
-            #Se itera sobre cada posicion siguiente a la posicion actual
-            for c in self.posiciones_siguientes(posicion):
-                #Cuando el jugador contrario se esta moviendo hacia adelante en terminos de coordenadas,
-                #entre menores sean nuestras coordenadas (menos espacio para movernos) estamos en mayor riesgo
-                if self.simbolo == 'B' and p[0] > c[0] and p[1] > c[1]:
-                    return True
-                
-                #Cuando nos estamos moviendo hacia adelante en terminos de coordenadas, entre menores sean
-                #las coordenadas del jugador contrario, nuestro jugador representara una mayor amenaza 
-                elif self.simbolo != 'B' and p[0] < c[0] and p[1] < c[1]:
-                    return True
-        return False
 
     def posicionesAmenazadas(self, posicion) -> int:
        #Se calculan las posiciones del jugador contrario
@@ -64,7 +40,7 @@ class JugadorCaballosBailadoresEquipo6(JugadorCaballosBailadores):
             #Se itera sobre cada posicion siguiente a la posicion actual
             for nosotros in self.posiciones_siguientes(contrario):
                 if self.triunfo(nosotros) == self.simbolo:
-                    posiciones_amenazadas += 1
+                    posiciones_amenazadas += 10
         
         return posiciones_amenazadas
 
@@ -73,8 +49,12 @@ class JugadorCaballosBailadoresEquipo6(JugadorCaballosBailadores):
     def heuristica(self, posicion, jugador_max) -> int:
         #me parece que esta heuristica todavia se puede mejorar aun mas
         #porque ahorita nomas verifica si 
-        if  self.triunfo(posicion) == self.simbolo:
-            return 100
+        triunfo = self.triunfo(posicion)
+        if triunfo: 
+            if  triunfo == self.simbolo:
+                return 100
+            else:
+                return -100
         
         if not jugador_max:
             return self.evitarPerder(posicion)
@@ -114,7 +94,7 @@ class JugadorCaballosBailadoresEquipo6(JugadorCaballosBailadores):
                 if beta <= alpha:
                     break
             #Mejor evaluacion encontrada para el maximizing player
-            return maxEval
+            return alpha 
         else:
             #Si no es el turno del maximizing player, es turno del minimizing player
             minEval = float('inf')
@@ -125,7 +105,7 @@ class JugadorCaballosBailadoresEquipo6(JugadorCaballosBailadores):
                 beta = min(beta, evaluacion)
                 if beta <= alpha:
                     break
-            return minEval
+            return beta 
     
     
      #Funcion que toma una posicion como argumento y utiliza minimax para tomar una decision sobre el mejor movimiento
@@ -138,6 +118,8 @@ class JugadorCaballosBailadoresEquipo6(JugadorCaballosBailadores):
         for p in posibles:
             #Se calcula la evaluacion de la posicion p utilizando un minimax con profundidad maxima de 3
             #Indica que es turno del minimizing player
+            if self.triunfo(p) == self.simbolo:
+                return p
             eval = self.minimax(p, profundidad=4, jugador_max=False, alpha=float('-inf'), beta=float('inf'))
             if eval > maxEval:
                 maxEval = eval
