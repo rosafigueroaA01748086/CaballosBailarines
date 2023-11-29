@@ -9,5 +9,5 @@ if __name__ == '__main__':
     juego = JuegoCaballosBailadores(
         JugadorCaballosBailadoresAleatorio('Dora la Iteradora'),
         JugadorCaballosBailadoresEquipo6('Bichites'),
-        6, 9)
+        7, 7)
     juego.inicia(veces=1000, delta_max=2)

@@ -56,10 +56,12 @@ class JugadorCaballosBailadoresEquipo6(JugadorCaballosBailadores):
             else:
                 return -100
         
-        if not jugador_max:
-            return self.evitarPerder(posicion)
-        
+        #Defender
         if jugador_max:
+            return self.evitarPerder(posicion)
+
+        #Atacar     
+        if not jugador_max:
             return self.posicionesAmenazadas(posicion)
 
         return 0
